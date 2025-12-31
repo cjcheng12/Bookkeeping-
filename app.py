@@ -1,7 +1,11 @@
 import streamlit as st
 from db import init_db
 
-st.set_page_config(page_title="現金流記帳", layout="wide")
+st.set_page_config(
+    page_title="現金流記帳",  # ← 這就是 App 名稱
+    layout="wide"
+)
+
 init_db()
 
 st.title("現金流記帳程式")
