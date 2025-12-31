@@ -28,14 +28,10 @@ def insert_tx(account: str, category: str, amount: float, tx_date: date, payment
     conn = get_conn()
     cur = conn.cursor()
     cur.execute("""
-        INSERT INTO transactions
-        (account, category, amount, tx_date, payment_method, note)
+        INSERT INTO transactions (account, category, amount, tx_date, payment_method, note)
         VALUES (?, ?, ?, ?, ?, ?)
     """, (
-        account,
-        category,
-        float(amount),
-        tx_date.isoformat(),
+        account, category, float(amount), tx_date.isoformat(),
         payment_method if payment_method else None,
         (note or "").strip() or None
     ))
@@ -53,3 +49,7 @@ def fetch_df(where_sql: str = "", params: tuple = ()):
     if not df.empty:
         df["tx_date"] = pd.to_datetime(df["tx_date"]).dt.date
     return df
+
+        
+      
+    
