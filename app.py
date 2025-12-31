@@ -5,6 +5,7 @@ st.set_page_config(page_title="現金流記帳", layout="wide")
 init_db()
 
 st.title("現金流記帳程式")
+
 account = st.selectbox("你要記錄哪一個帳戶呢？", ["常弘服裝", "個人開銷"])
 st.session_state["account"] = account
 
