@@ -1,4 +1,3 @@
-
 import streamlit as st
 from datetime import date
 from db import insert_tx
@@ -13,7 +12,7 @@ account = st.session_state["account"]
 
 CATEGORIES = {
     "常弘服裝": ["春美的工錢","阿霞的工錢","江代工的工錢","整燙","印花","徽章","彩帶","鬆緊帶","滾條","其它"],
-    "個人開銷": ["早餐","午餐","晚餐","其它"]  # ✅ 信用卡改成支付方式
+    "個人開銷": ["早餐","午餐","晚餐","其它"]
 }
 PAYMENTS = ["信用卡", "現金"]
 
@@ -28,13 +27,11 @@ with st.form("add_tx", clear_on_submit=True):
     else:
         st.caption("常弘服裝：支付方式可不填")
 
-    note = st.text_input("備註（可空）", placeholder="例如：店名、案號、哪一張單…")
+    note = st.text_input("備註（可空）")
     ok = st.form_submit_button("記一筆")
 
 if ok:
-    if amount <= 0:
-        st.error("金額必須大於 0")
-    else:
-        insert_tx(account, category, amount, tx_date, payment_method, note)
-        pm = payment_method if payment_method else "-"
-        st.success(f"已記錄：{account} / {category} / {amount:.2f} / {pm} / {tx_date}")
+    insert_tx(account, category, amount, tx_date, payment_method, note)
+    st.success("已記錄 ✅")
+
+     
