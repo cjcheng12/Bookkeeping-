@@ -2,7 +2,8 @@ import streamlit as st
 from db import init_db
 
 st.set_page_config(
-    page_title="現金流記帳",  # ← 這就是 App 名稱
+    page_title="常弘記帳",
+    page_icon="💰",
     layout="wide"
 )
 
