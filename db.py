@@ -6,10 +6,28 @@ DB_PATH = "cashflow.db"
 
 def get_conn():
     return sqlite3.connect(DB_PATH, check_same_thread=False)
-
+def insert_tx(account, category, amount, tx_date, payment_method, note):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO transactions
+        (account, category, amount, tx_date, payment_method, note)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        account,
+        category,
+        float(amount),
+        tx_date.isoformat(),
+        payment_method,
+        (note or "").strip() or None
+    ))
+    conn.commit()
+    conn.close()
 def init_db():
     conn = get_conn()
     cur = conn.cursor()
+
+    # 1. 建立 table（如果還沒有）
     cur.execute("""
     CREATE TABLE IF NOT EXISTS transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,23 +39,19 @@ def init_db():
         note TEXT
     )
     """)
+
+    # 2. 檢查 payment_method 欄位是否存在（舊資料庫升級用）
+    cur.execute("PRAGMA table_info(transactions)")
+    columns = [row[1] for row in cur.fetchall()]
+
+    if "payment_method" not in columns:
+        cur.execute("ALTER TABLE transactions ADD COLUMN payment_method TEXT")
+
+    if "note" not in columns:
+        cur.execute("ALTER TABLE transactions ADD COLUMN note TEXT")
+
     conn.commit()
     conn.close()
-
-def insert_tx(account: str, category: str, amount: float, tx_date: date, payment_method: str | None, note: str | None):
-    conn = get_conn()
-    cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO transactions (account, category, amount, tx_date, payment_method, note)
-        VALUES (?, ?, ?, ?, ?, ?)
-    """, (
-        account, category, float(amount), tx_date.isoformat(),
-        payment_method if payment_method else None,
-        (note or "").strip() or None
-    ))
-    conn.commit()
-    conn.close()
-
 def fetch_df(where_sql: str = "", params: tuple = ()):
     conn = get_conn()
     q = "SELECT id, account, category, amount, tx_date, payment_method, note FROM transactions"
