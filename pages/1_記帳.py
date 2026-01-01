@@ -14,7 +14,7 @@ CATEGORIES = {
     "常弘服裝": ["春美的工錢","阿霞的工錢","江代工的工錢","整燙","印花","徽章","彩帶","鬆緊帶","滾條","其它"],
     "個人開銷": ["早餐","午餐","晚餐","其它"]
 }
-PAYMENTS = ["信用卡", "現金"]
+PAYMENTS = ["現金", "信用卡"]
 
 with st.form("add_tx", clear_on_submit=True):
     tx_date = st.date_input("日期", value=date.today())
