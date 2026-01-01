@@ -9,7 +9,7 @@ CATEGORIES = {
     "常弘服裝": ["春美的工錢", "阿霞的工錢", "江代工的工錢", "整燙", "印花", "徽章", "彩帶", "鬆緊帶", "滾條", "其它"],
     "個人開銷": ["早餐", "午餐", "晚餐", "其它"],
 }
-PAYMENTS_PERSONAL = ["信用卡", "現金"]
+PAYMENTS_PERSONAL = ["現金", "信用卡"]
 
 # -----------------------
 # Page UI
@@ -31,7 +31,7 @@ st.subheader(f"新增支出（目前帳戶：{account}）")
 with st.form("add_tx", clear_on_submit=True):
     tx_date = st.date_input("日期", value=date.today())
     category = st.selectbox("類別", CATEGORIES[account])
-    amount = st.number_input("金額", min_value=1.0, step=10.0, format="%.2f")
+    amount = st.number_input("金額", min_value=0.0, step=10.0, format="%.2f")
 
     payment_method = None
     if account == "個人開銷":
