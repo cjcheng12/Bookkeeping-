@@ -22,4 +22,13 @@ with center:
 
     with col_a:
         if st.button("🏭 常弘服裝", use_container_width=True):
-            st.session_state["account"] = "常弘服裝
+            st.session_state["account"] = "常弘服裝"
+
+    with col_b:
+        if st.button("👤 個人開銷", use_container_width=True):
+            st.session_state["account"] = "個人開銷"
+
+    # Feedback after selection
+    if "account" in st.session_state:
+        st.success(f"目前帳戶：{st.session_state['account']}")
+        st.caption("請從左側選單進入：記帳 / 報表")
