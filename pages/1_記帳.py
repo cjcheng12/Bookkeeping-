@@ -1,6 +1,7 @@
+
 import streamlit as st
 from datetime import date
-from db import insert_tx, fetch_df, update_amount  # 你 db.py 需要有這三個
+from db import insert_tx, fetch_df, update_amount
 
 # -----------------------
 # 設定：帳戶 / 類別 / 付款方式
@@ -31,12 +32,12 @@ st.subheader(f"新增支出（目前帳戶：{account}）")
 with st.form("add_tx", clear_on_submit=True):
     tx_date = st.date_input("日期", value=date.today())
     category = st.selectbox("類別", CATEGORIES[account])
-    amount = st.number_input(
-    "金額",
-    min_value=0,
-    step=10,
-    value=0
-)
+
+    # ✅ 金額先空白：用 text_input
+    amount_text = st.text_input(
+        "金額",
+        placeholder="請輸入整數金額（必填）"
+    )
 
     payment_method = None
     if account == "個人開銷":
@@ -59,19 +60,28 @@ if go_home:
 
 # 按「記一筆」
 if submit_add:
-    if amount <= 0:
-        st.error("金額必須大於 0")
+    amt = amount_text.strip()
+
+    if amt == "":
+        st.error("請輸入金額")
+    elif not amt.isdigit():
+        st.error("金額必須是整數（只能輸入 0-9）")
     else:
-        insert_tx(
-            account=account,
-            category=category,
-            amount=float(amount),
-            tx_date=tx_date,
-            payment_method=payment_method,
-            note=note
-        )
-        st.success("已記錄 ✅")
-        st.rerun()
+        amount = int(amt)
+
+        if amount <= 0:
+            st.error("金額必須大於 0")
+        else:
+            insert_tx(
+                account=account,
+                category=category,
+                amount=amount,               # ✅ 整數
+                tx_date=tx_date,
+                payment_method=payment_method,
+                note=note
+            )
+            st.success("已記錄 ✅")
+            st.rerun()
 
 # -----------------------
 # 修改金額（最近 20 筆）
@@ -94,27 +104,27 @@ else:
     tx_id = st.selectbox("選擇要修改的紀錄 ID", df_recent["id"].tolist())
 
     row = df_recent[df_recent["id"] == tx_id].iloc[0]
-    old_amount = float(row["amount"])
+    old_amount = int(float(row["amount"]))  # 兼容舊資料可能是 float
 
+    # ✅ 修改金額：不要小數點 → 用整數 number_input
     new_amount = st.number_input(
         "新的金額",
-        min_value=1.0,
-        step=10.0,
-        value=old_amount,
-        format="%.2f"
+        min_value=1,
+        step=10,
+        value=old_amount
     )
 
     colA, colB = st.columns(2)
     with colA:
-        st.caption(f"原本金額：{old_amount:.2f}")
+        st.caption(f"原本金額：{old_amount}")
     with colB:
-        st.caption(f"修改後：{new_amount:.2f}")
+        st.caption(f"修改後：{new_amount}")
 
     col_save, col_home2 = st.columns([3, 1])
     with col_save:
         if st.button("儲存金額修改", use_container_width=True):
-            update_amount(int(tx_id), float(new_amount))
-            st.success(f"已更新 ✅  (# {tx_id}) {old_amount:.2f} → {new_amount:.2f}")
+            update_amount(int(tx_id), int(new_amount))
+            st.success(f"已更新 ✅  (# {tx_id}) {old_amount} → {int(new_amount)}")
             st.rerun()
 
     with col_home2:
