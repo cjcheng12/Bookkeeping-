@@ -49,7 +49,15 @@ def fetch_df(where_sql: str = "", params: tuple = ()):
     if not df.empty:
         df["tx_date"] = pd.to_datetime(df["tx_date"]).dt.date
     return df
-
+def update_amount(tx_id: int, new_amount: float):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE transactions SET amount = ? WHERE id = ?",
+        (float(new_amount), int(tx_id))
+    )
+    conn.commit()
+    conn.close()
         
       
     
