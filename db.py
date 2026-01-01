@@ -27,7 +27,7 @@ def init_db():
     conn = get_conn()
     cur = conn.cursor()
 
-    # 1. 建立 table（如果還沒有）
+    # 1. 確保 table 存在（新資料庫）
     cur.execute("""
     CREATE TABLE IF NOT EXISTS transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,14 +40,14 @@ def init_db():
     )
     """)
 
-    # 2. 檢查 payment_method 欄位是否存在（舊資料庫升級用）
+    # 2. 讀取現有欄位（舊資料庫升級）
     cur.execute("PRAGMA table_info(transactions)")
-    columns = [row[1] for row in cur.fetchall()]
+    existing_columns = [row[1] for row in cur.fetchall()]
 
-    if "payment_method" not in columns:
+    if "payment_method" not in existing_columns:
         cur.execute("ALTER TABLE transactions ADD COLUMN payment_method TEXT")
 
-    if "note" not in columns:
+    if "note" not in existing_columns:
         cur.execute("ALTER TABLE transactions ADD COLUMN note TEXT")
 
     conn.commit()
@@ -72,6 +72,7 @@ def update_amount(tx_id: int, new_amount: float):
     )
     conn.commit()
     conn.close()
+init_db()
         
       
     
