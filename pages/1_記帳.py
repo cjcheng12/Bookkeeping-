@@ -78,4 +78,24 @@ else:
             update_amount(tx_id, new_amount)
             st.success(f"已更新 ✅  (# {tx_id}) {old_amount:.2f} → {new_amount:.2f}")
             st.rerun()
-     
+# ---------- 固定右下角「回到主頁」 ----------
+st.markdown(
+    """
+    <style>
+    div[data-testid="stButton"][id="back-home"] {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+with st.container():
+    st.markdown('<div id="back-home">', unsafe_allow_html=True)
+    if st.button("🏠 回到主頁"):
+        st.switch_page("Home.py")
+    st.markdown('</div>', unsafe_allow_html=True)
+
